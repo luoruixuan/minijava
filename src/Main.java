@@ -19,6 +19,7 @@ public class Main{
 			FileInputStream in = new FileInputStream(args[0]);
 			Node root = new MiniJavaParser(in).Goal();
 			root.accept(new MyVisitor());
+			System.out.println(((Node)root).getClass().getName());
 		}catch (ParseException e){
 			e.printStackTrace();
 		}catch (TokenMgrError e){
