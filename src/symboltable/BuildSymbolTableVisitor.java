@@ -91,15 +91,21 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f17 -> "}"
 	    */
 	   public void visit(MainClass n, A argu) {
-		   args.mainclass = n.f1.toString();
-		   argu.
+		   ClassSymbol C = new ClassSymbol(n.f1.f0.toString(), argu.classes.get("Object"));
+		   MethodSymbol M = new MethodSymbol("main", "void");
+		   M.addArg("String*")
+		   argu.mainclass = n.f1.f0.toString();
+		   n.f14.accept(this, M);
+		   M.addVar(new VarSymbol("String", n.f11.f0.toString()));
+		   C.addMethod(M);
+		   argu.classes.put(n.f1.f0.toString(), C);
 	   }
 
 	   /**
 	    * f0 -> ClassDeclaration()
 	    *       | ClassExtendsDeclaration()
 	    */
-	   public void visit(TypeDeclaration n, A argu);
+	   //public void visit(TypeDeclaration n, A argu);
 
 	   /**
 	    * f0 -> "class"
@@ -109,7 +115,13 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f4 -> ( MethodDeclaration() )*
 	    * f5 -> "}"
 	    */
-	   public void visit(ClassDeclaration n, A argu);
+	   public void visit(ClassDeclaration n, A argu) {
+		   String name = n.f1.f0.toString();
+		   ClassSymbol C = new ClassSymbol(name, argu.classes.get("Object"));
+		   n.f3.accept(this, (A)C);
+		   n.f4.accept(this, (A)C);
+		   argu.classes.put(name, C);
+	   }
 
 	   /**
 	    * f0 -> "class"
@@ -121,14 +133,22 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f6 -> ( MethodDeclaration() )*
 	    * f7 -> "}"
 	    */
-	   public void visit(ClassExtendsDeclaration n, A argu);
+	   public void visit(ClassExtendsDeclaration n, A argu) {
+		   String name = n.f1.f0.toString();
+		   ClassSymbol C = new ClassSymbol(name, argu.classes.get(n.f3.f0.toString()));
+		   n.f5.accept(this, (A)C);
+		   n.f6.accept(this, (A)C);
+		   argu.classes.put(name, C);
+	   }
 
 	   /**
 	    * f0 -> Type()
 	    * f1 -> Identifier()
 	    * f2 -> ";"
 	    */
-	   public void visit(VarDeclaration n, A argu);
+	   public void visit(VarDeclaration n, A argu) {
+		   A.addVar(new VarSymbol(n.f0.f0.choice.toString(), n.f1.f0.toString()));
+	   }
 
 	   /**
 	    * f0 -> "public"
@@ -145,7 +165,12 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f11 -> ";"
 	    * f12 -> "}"
 	    */
-	   public void visit(MethodDeclaration n, A argu);
+	   public void visit(MethodDeclaration n, A argu) {
+		   String name = n.f2.f0.toString();
+		   MethodSymbol M = new MethodSymbol(name, n.f1.f0.choice.toString());
+		   n.f7.accept(this, (A)M);
+		   A.addMethod(M);
+	   }
 
 	   /**
 	    * f0 -> FormalParameter()

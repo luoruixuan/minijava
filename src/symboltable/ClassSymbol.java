@@ -1,8 +1,6 @@
 package symboltable;
 import java.util.*;
 
-import syntaxtree.Node;
-
 public class ClassSymbol extends Symbol {
 	ClassSymbol cls_super;
 	Hashtable<String, VarSymbol> cls_var;
