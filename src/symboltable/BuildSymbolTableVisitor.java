@@ -1,3 +1,4 @@
+package symboltable;
 import java.util.Enumeration;
 
 import syntaxtree.AllocationExpression;
