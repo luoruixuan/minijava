@@ -1,18 +1,23 @@
 import syntaxtree.*;
 import symboltable.*;
 import java.io.FileInputStream;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import typecheck.TypeCheckVisitor;
 
 
 public class Main{
 	public static void main(String args[]) {
+		//AutoTest tester = new AutoTest();
+		//tester.run();
+		
 		SymbolTable ST = new SymbolTable();
 		BuildSymbolTableVisitor V = new BuildSymbolTableVisitor();
 		try {
 			FileInputStream in = new FileInputStream(args[0]);
 			Node root = new MiniJavaParser(in).Goal();
 			root.accept(V, ST);
+			TypeCheckVisitor TV = new TypeCheckVisitor();
+			root.accept(TV, ST);
+			System.out.println("Accpet.");
 		}catch (ParseException e){
 			e.printStackTrace();
 		}catch (TokenMgrError e){
@@ -20,11 +25,6 @@ public class Main{
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		Hashtable<String, ClassSymbol> h = ST.classes;
-		Enumeration<ClassSymbol> i = h.elements();
-		while(i.hasMoreElements()){
-			ClassSymbol C = i.nextElement();
-			System.out.println(C);
-		}
+		
 	}
 }

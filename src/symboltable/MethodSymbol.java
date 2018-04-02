@@ -24,7 +24,7 @@ public class MethodSymbol extends Symbol {
 	
 	void addArg(VarSymbol var)
 	{
-		if (local_var.contains(var.getName())) {
+		if (local_var.containsKey(var.getName())) {
 			System.out.println("Variable "+var.getName()+" duplicate defination.");
 			System.exit(0);
 		}
@@ -35,14 +35,19 @@ public class MethodSymbol extends Symbol {
 	public String argElementAt(int i) { return args_type.elementAt(i); }
 	public int argSize() { return args_type.size(); }
 	
-	void addVar(VarSymbol var) { 
-		if (local_var.contains(var.getName())) {
+	public void addVar(VarSymbol var) { 
+		if (local_var.containsKey(var.getName())) {
 			System.out.println("Variable "+var.getName()+" duplicate defination.");
 			System.exit(0);
 		}
 		local_var.put(var.getName(), var); 
-		}
+	}
 	public Enumeration<VarSymbol> varElements() { return local_var.elements(); }
+	public boolean hasVar(String var) {
+		return local_var.containsKey(var);
+	}
+	
+	// just for debug
 	public String toString() {
 		String ret = method_type + " " + sym_name + "(";
 		Enumeration<String> i = argElements();

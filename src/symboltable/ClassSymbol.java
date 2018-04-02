@@ -22,20 +22,37 @@ public class ClassSymbol extends Symbol {
 		cls_depth = (cls_super == null) ? 0 : (cls_super.cls_depth+1);
 	}
 	
+	public void setName(String name) {
+		sym_name = name;
+		VarSymbol This = new VarSymbol("this", name);
+		cls_var.put("this", This);
+	}
+	
 	public void setSuper(ClassSymbol Super) { cls_super = Super; }
 	public ClassSymbol getSuper() { return cls_super; }
 	
 	public void addVar(VarSymbol var) { 
-		if (cls_var.contains(var.getName())) {
+		if (cls_var.containsKey(var.getName())) {
 			System.out.println("Variable duplicate defination.");
 			System.exit(0);
 		}
 		cls_var.put(var.getName(), var); 
-		}
+	}
 	public Enumeration<VarSymbol> varElements() { return cls_var.elements(); }
+	public boolean hasVar(String var) {
+		if (cls_var.containsKey(var)) return true;
+		if (getSuper() == null) return false;
+		return getSuper().hasVar(var);
+	}
+	public VarSymbol getVar(String var) {
+		if (cls_var.containsKey(var))
+			return cls_var.get(var);
+		else
+			return getSuper().getVar(var);
+	}
 	
 	public void addMethod(MethodSymbol method) { 
-		if (cls_method.contains(method.getName())) {
+		if (cls_method.containsKey(method.getName())) {
 			System.out.println("Method duplicate defination.");
 			System.exit(0);
 		}
