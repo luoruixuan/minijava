@@ -27,4 +27,16 @@ public class ClassSymbol extends Symbol {
 	
 	public void addMethod(MethodSymbol method) { cls_method.put(method.getName(), method); }
 	public Enumeration<MethodSymbol> methodElements() { return cls_method.elements(); }
+	public String toString() {
+		String ret = sym_name + " extends " + cls_super.getName() + "\n{\n";
+		Enumeration i = varElements();
+		while (i.hasMoreElements()) {
+			ret = ret + cls_var.get(i.nextElement()) + "\n";
+		}
+		i = methodElements();
+		while (i.hasMoreElements()) {
+			ret = ret + cls_method.get(i.nextElement()) + "\n";
+		}
+		return ret+"}";
+	}
 }

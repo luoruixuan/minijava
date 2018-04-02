@@ -51,13 +51,24 @@ import syntaxtree.VarDeclaration;
 import syntaxtree.WhileStatement;
 import visitor.GJVoidDepthFirst;
 
-class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
+public class BuildSymbolTableVisitor extends GJVoidDepthFirst<Symbol>{
 
-	   public void visit(NodeList n, A argu);
-	   public void visit(NodeListOptional n, A argu);
-	   public void visit(NodeOptional n, A argu);
-	   public void visit(NodeSequence n, A argu);
-	   public void visit(NodeToken n, A argu);
+	   private String parseType(Type n) {
+		   Node c = n.f0.choice;
+		   String t = c.getClass().toString();
+		   if (t.equals("class syntaxtree.ArrayType")) return "int*";
+		   if (t.equals("class syntaxtree.Identifier")) return ((Identifier)c).f0.toString();
+		   if (t.equals("class syntaxtree.IntegerType")) return ((IntegerType)c).f0.toString();
+		   if (t.equals("class syntaxtree.BooleanType")) return ((BooleanType)c).f0.toString();
+		   return null;
+	   }
+	
+	
+	   //public void visit(NodeList n, Symbol argu);
+	   //public void visit(NodeListOptional n, Symbol argu);
+	   //public void visit(NodeOptional n, Symbol argu);
+	   //public void visit(NodeSequence n, Symbol argu);
+	   //public void visit(NodeToken n, Symbol argu);
 
 	   //
 	   // User-generated visitor methods below
@@ -68,7 +79,7 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f1 -> ( TypeDeclaration() )*
 	    * f2 -> <EOF>
 	    */
-	   //public void visit(Goal n, A argu);
+	   //public void visit(Goal n, Symbol argu);
 
 	   /**
 	    * f0 -> "class"
@@ -90,22 +101,22 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f16 -> "}"
 	    * f17 -> "}"
 	    */
-	   public void visit(MainClass n, A argu) {
-		   ClassSymbol C = new ClassSymbol(n.f1.f0.toString(), argu.classes.get("Object"));
+	   public void visit(MainClass n, Symbol argu) {
+		   SymbolTable ST = (SymbolTable)argu;
+		   ClassSymbol C = new ClassSymbol(n.f1.f0.toString(), ST.classes.get("Object"));
 		   MethodSymbol M = new MethodSymbol("main", "void");
-		   M.addArg("String*")
-		   argu.mainclass = n.f1.f0.toString();
-		   n.f14.accept(this, M);
-		   M.addVar(new VarSymbol("String", n.f11.f0.toString()));
+		   M.addArg(new VarSymbol("String*", n.f11.f0.toString()));
+		   ST.mainclass = n.f1.f0.toString();
+		   n.f14.accept(this, (Symbol)M);
 		   C.addMethod(M);
-		   argu.classes.put(n.f1.f0.toString(), C);
+		   ST.classes.put(n.f1.f0.toString(), C);
 	   }
 
 	   /**
 	    * f0 -> ClassDeclaration()
 	    *       | ClassExtendsDeclaration()
 	    */
-	   //public void visit(TypeDeclaration n, A argu);
+	   //public void visit(TypeDeclaration n, Symbol argu);
 
 	   /**
 	    * f0 -> "class"
@@ -115,12 +126,13 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f4 -> ( MethodDeclaration() )*
 	    * f5 -> "}"
 	    */
-	   public void visit(ClassDeclaration n, A argu) {
+	   public void visit(ClassDeclaration n, Symbol argu) {
+		   SymbolTable ST = (SymbolTable)argu;
 		   String name = n.f1.f0.toString();
-		   ClassSymbol C = new ClassSymbol(name, argu.classes.get("Object"));
-		   n.f3.accept(this, (A)C);
-		   n.f4.accept(this, (A)C);
-		   argu.classes.put(name, C);
+		   ClassSymbol C = new ClassSymbol(name, ST.classes.get("Object"));
+		   n.f3.accept(this, (Symbol)C);
+		   n.f4.accept(this, (Symbol)C);
+		   ST.classes.put(name, C);
 	   }
 
 	   /**
@@ -133,12 +145,13 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f6 -> ( MethodDeclaration() )*
 	    * f7 -> "}"
 	    */
-	   public void visit(ClassExtendsDeclaration n, A argu) {
+	   public void visit(ClassExtendsDeclaration n, Symbol argu) {
+		   SymbolTable ST = (SymbolTable)argu;
 		   String name = n.f1.f0.toString();
-		   ClassSymbol C = new ClassSymbol(name, argu.classes.get(n.f3.f0.toString()));
-		   n.f5.accept(this, (A)C);
-		   n.f6.accept(this, (A)C);
-		   argu.classes.put(name, C);
+		   ClassSymbol C = new ClassSymbol(name, ST.classes.get(n.f3.f0.toString()));
+		   n.f5.accept(this, (Symbol)C);
+		   n.f6.accept(this, (Symbol)C);
+		   ST.classes.put(name, C);
 	   }
 
 	   /**
@@ -146,8 +159,13 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f1 -> Identifier()
 	    * f2 -> ";"
 	    */
-	   public void visit(VarDeclaration n, A argu) {
-		   A.addVar(new VarSymbol(n.f0.f0.choice.toString(), n.f1.f0.toString()));
+	   public void visit(VarDeclaration n, Symbol argu) {
+		   if (argu.getClass().toString().equals("class symboltable.ClassSymbol")) {
+			   ((ClassSymbol)argu).addVar(new VarSymbol(parseType(n.f0), n.f1.f0.toString()));
+		   }
+		   else {
+			   ((MethodSymbol)argu).addVar(new VarSymbol(parseType(n.f0), n.f1.f0.toString()));
+		   }
 	   }
 
 	   /**
@@ -165,30 +183,34 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f11 -> ";"
 	    * f12 -> "}"
 	    */
-	   public void visit(MethodDeclaration n, A argu) {
+	   public void visit(MethodDeclaration n, Symbol argu) {
 		   String name = n.f2.f0.toString();
-		   MethodSymbol M = new MethodSymbol(name, n.f1.f0.choice.toString());
-		   n.f7.accept(this, (A)M);
-		   A.addMethod(M);
+		   MethodSymbol M = new MethodSymbol(name, parseType(n.f1));
+		   n.f4.accept(this, (Symbol)M);
+		   n.f7.accept(this, (Symbol)M);
+		   ((ClassSymbol)argu).addMethod(M);
 	   }
 
 	   /**
 	    * f0 -> FormalParameter()
 	    * f1 -> ( FormalParameterRest() )*
 	    */
-	   public void visit(FormalParameterList n, A argu);
-
+	   // public void visit(FormalParameterList n, Symbol argu);
+	   
 	   /**
 	    * f0 -> Type()
 	    * f1 -> Identifier()
 	    */
-	   public void visit(FormalParameter n, A argu);
+	   public void visit(FormalParameter n, Symbol argu) {
+		   MethodSymbol M = (MethodSymbol)argu;
+		   M.addArg(new VarSymbol(n.f1.f0.toString(), parseType(n.f0)));
+	   }
 
 	   /**
 	    * f0 -> ","
 	    * f1 -> FormalParameter()
 	    */
-	   public void visit(FormalParameterRest n, A argu);
+	   //public void visit(FormalParameterRest n, Symbol argu);
 
 	   /**
 	    * f0 -> ArrayType()
@@ -196,24 +218,24 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    *       | IntegerType()
 	    *       | Identifier()
 	    */
-	   public void visit(Type n, A argu);
+	   //public void visit(Type n, Symbol argu);
 
 	   /**
 	    * f0 -> "int"
 	    * f1 -> "["
 	    * f2 -> "]"
 	    */
-	   public void visit(ArrayType n, A argu);
+	   //public void visit(ArrayType n, Symbol argu);
 
 	   /**
 	    * f0 -> "boolean"
 	    */
-	   public void visit(BooleanType n, A argu);
+	   //public void visit(BooleanType n, Symbol argu);
 
 	   /**
 	    * f0 -> "int"
 	    */
-	   public void visit(IntegerType n, A argu);
+	   //public void visit(IntegerType n, Symbol argu);
 
 	   /**
 	    * f0 -> Block()
@@ -223,14 +245,14 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    *       | WhileStatement()
 	    *       | PrintStatement()
 	    */
-	   public void visit(Statement n, A argu);
+	   //public void visit(Statement n, Symbol argu);
 
 	   /**
 	    * f0 -> "{"
 	    * f1 -> ( Statement() )*
 	    * f2 -> "}"
 	    */
-	   public void visit(Block n, A argu);
+	   //public void visit(Block n, Symbol argu);
 
 	   /**
 	    * f0 -> Identifier()
@@ -238,7 +260,7 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f2 -> Expression()
 	    * f3 -> ";"
 	    */
-	   public void visit(AssignmentStatement n, A argu);
+	   //public void visit(AssignmentStatement n, Symbol argu);
 
 	   /**
 	    * f0 -> Identifier()
@@ -249,7 +271,7 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f5 -> Expression()
 	    * f6 -> ";"
 	    */
-	   public void visit(ArrayAssignmentStatement n, A argu);
+	   //public void visit(ArrayAssignmentStatement n, Symbol argu);
 
 	   /**
 	    * f0 -> "if"
@@ -260,7 +282,7 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f5 -> "else"
 	    * f6 -> Statement()
 	    */
-	   public void visit(IfStatement n, A argu);
+	   //public void visit(IfStatement n, Symbol argu);
 
 	   /**
 	    * f0 -> "while"
@@ -269,7 +291,7 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f3 -> ")"
 	    * f4 -> Statement()
 	    */
-	   public void visit(WhileStatement n, A argu);
+	   //public void visit(WhileStatement n, Symbol argu);
 
 	   /**
 	    * f0 -> "System.out.println"
@@ -278,7 +300,7 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f3 -> ")"
 	    * f4 -> ";"
 	    */
-	   public void visit(PrintStatement n, A argu);
+	   //public void visit(PrintStatement n, Symbol argu);
 
 	   /**
 	    * f0 -> AndExpression()
@@ -291,42 +313,42 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    *       | MessageSend()
 	    *       | PrimaryExpression()
 	    */
-	   public void visit(Expression n, A argu);
+	   //public void visit(Expression n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
 	    * f1 -> "&&"
 	    * f2 -> PrimaryExpression()
 	    */
-	   public void visit(AndExpression n, A argu);
+	   //public void visit(AndExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
 	    * f1 -> "<"
 	    * f2 -> PrimaryExpression()
 	    */
-	   public void visit(CompareExpression n, A argu);
+	   //public void visit(CompareExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
 	    * f1 -> "+"
 	    * f2 -> PrimaryExpression()
 	    */
-	   public void visit(PlusExpression n, A argu);
+	   //public void visit(PlusExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
 	    * f1 -> "-"
 	    * f2 -> PrimaryExpression()
 	    */
-	   public void visit(MinusExpression n, A argu);
+	   //public void visit(MinusExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
 	    * f1 -> "*"
 	    * f2 -> PrimaryExpression()
 	    */
-	   public void visit(TimesExpression n, A argu);
+	   //public void visit(TimesExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
@@ -334,14 +356,14 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f2 -> PrimaryExpression()
 	    * f3 -> "]"
 	    */
-	   public void visit(ArrayLookup n, A argu);
+	   //public void visit(ArrayLookup n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
 	    * f1 -> "."
 	    * f2 -> "length"
 	    */
-	   public void visit(ArrayLength n, A argu);
+	   //public void visit(ArrayLength n, Symbol argu);
 
 	   /**
 	    * f0 -> PrimaryExpression()
@@ -351,19 +373,19 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f4 -> ( ExpressionList() )?
 	    * f5 -> ")"
 	    */
-	   public void visit(MessageSend n, A argu);
+	   //public void visit(MessageSend n, Symbol argu);
 
 	   /**
 	    * f0 -> Expression()
 	    * f1 -> ( ExpressionRest() )*
 	    */
-	   public void visit(ExpressionList n, A argu);
+	   //public void visit(ExpressionList n, Symbol argu);
 
 	   /**
 	    * f0 -> ","
 	    * f1 -> Expression()
 	    */
-	   public void visit(ExpressionRest n, A argu);
+	   //public void visit(ExpressionRest n, Symbol argu);
 
 	   /**
 	    * f0 -> IntegerLiteral()
@@ -376,32 +398,32 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    *       | NotExpression()
 	    *       | BracketExpression()
 	    */
-	   public void visit(PrimaryExpression n, A argu);
+	   //public void visit(PrimaryExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> <INTEGER_LITERAL>
 	    */
-	   public void visit(IntegerLiteral n, A argu);
+	   //public void visit(IntegerLiteral n, Symbol argu);
 
 	   /**
 	    * f0 -> "true"
 	    */
-	   public void visit(TrueLiteral n, A argu);
+	   //public void visit(TrueLiteral n, Symbol argu);
 
 	   /**
 	    * f0 -> "false"
 	    */
-	   public void visit(FalseLiteral n, A argu);
+	   //public void visit(FalseLiteral n, Symbol argu);
 
 	   /**
 	    * f0 -> <IDENTIFIER>
 	    */
-	   public void visit(Identifier n, A argu);
+	   //public void visit(Identifier n, Symbol argu);
 
 	   /**
 	    * f0 -> "this"
 	    */
-	   public void visit(ThisExpression n, A argu);
+	   //public void visit(ThisExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> "new"
@@ -410,7 +432,7 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f3 -> Expression()
 	    * f4 -> "]"
 	    */
-	   public void visit(ArrayAllocationExpression n, A argu);
+	   //public void visit(ArrayAllocationExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> "new"
@@ -418,18 +440,18 @@ class BuildSymbolTableVisitor<A> extends GJVoidDepthFirst<A>{
 	    * f2 -> "("
 	    * f3 -> ")"
 	    */
-	   public void visit(AllocationExpression n, A argu);
+	   //public void visit(AllocationExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> "!"
 	    * f1 -> Expression()
 	    */
-	   public void visit(NotExpression n, A argu);
+	   //public void visit(NotExpression n, Symbol argu);
 
 	   /**
 	    * f0 -> "("
 	    * f1 -> Expression()
 	    * f2 -> ")"
 	    */
-	   public void visit(BracketExpression n, A argu);
+	   //public void visit(BracketExpression n, Symbol argu);
 }

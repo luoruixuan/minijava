@@ -3,21 +3,22 @@ package symboltable;
 public class VarSymbol extends Symbol {
 	String var_type;
 	
-	VarSymbol ()
+	public VarSymbol ()
 	{
 	}
-	VarSymbol (String name, String type)
+	public VarSymbol (String name, String type)
 	{
 		setName(name);
 		var_type = type;
 	}
 	
-	void setType(String type)
+	public void setType(String type)
 	{
 		var_type = type;
 	}
-	String getType()
+	public String getType()
 	{
 		return var_type;
 	}
+	public String toString() {return var_type + ": "+ sym_name;}
 }

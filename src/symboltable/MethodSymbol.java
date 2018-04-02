@@ -31,4 +31,17 @@ public class MethodSymbol extends Symbol {
 	
 	void addVar(VarSymbol var) { local_var.put(var.getName(), var); }
 	public Enumeration<VarSymbol> varElements() { return local_var.elements(); }
+	public String toString() {
+		String ret = method_type + " " + sym_name + "(";
+		Enumeration i = argElements();
+		while (i.hasMoreElements()) {
+			ret = ret + i.nextElement() + ", ";
+		}
+		ret = ret.substring(0,ret.length()-2)+")\n{\n";
+		i = varElements();
+		while (i.hasMoreElements()) {
+			ret = ret + local_var.get(i.nextElement()) + "\n";
+		}
+		return ret+"}";
+	}
 }

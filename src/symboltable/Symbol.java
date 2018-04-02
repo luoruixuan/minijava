@@ -8,7 +8,7 @@ public class Symbol {
 		sym_name = name;
 	}
 	
-	String getName()
+	public String getName()
 	{
 		return sym_name;
 	}
