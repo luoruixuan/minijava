@@ -24,12 +24,22 @@ public class MethodSymbol extends Symbol {
 	
 	void addArg(VarSymbol var)
 	{
+		if (local_var.contains(var.getName())) {
+			System.out.println("Variable duplicate defination.");
+			System.exit(0);
+		}
 		args_type.addElement(var.getType());
 		local_var.put(var.getName(), var);
 	}
 	public Enumeration<String> argElements() { return args_type.elements(); }
 	
-	void addVar(VarSymbol var) { local_var.put(var.getName(), var); }
+	void addVar(VarSymbol var) { 
+		if (local_var.contains(var.getName())) {
+			System.out.println("Variable duplicate defination.");
+			System.exit(0);
+		}
+		local_var.put(var.getName(), var); 
+		}
 	public Enumeration<VarSymbol> varElements() { return local_var.elements(); }
 	public String toString() {
 		String ret = method_type + " " + sym_name + "(";

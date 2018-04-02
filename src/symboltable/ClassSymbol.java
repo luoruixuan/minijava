@@ -22,10 +22,22 @@ public class ClassSymbol extends Symbol {
 	public void setSuper(ClassSymbol Super) { cls_super = Super; }
 	public ClassSymbol getSuper() { return cls_super; }
 	
-	public void addVar(VarSymbol var) { cls_var.put(var.getName(), var); }
+	public void addVar(VarSymbol var) { 
+		if (cls_var.contains(var.getName())) {
+			System.out.println("Variable duplicate defination.");
+			System.exit(0);
+		}
+		cls_var.put(var.getName(), var); 
+		}
 	public Enumeration<VarSymbol> varElements() { return cls_var.elements(); }
 	
-	public void addMethod(MethodSymbol method) { cls_method.put(method.getName(), method); }
+	public void addMethod(MethodSymbol method) { 
+		if (cls_method.contains(method.getName())) {
+			System.out.println("Method duplicate defination.");
+			System.exit(0);
+		}
+		cls_method.put(method.getName(), method); 
+		}
 	public Enumeration<MethodSymbol> methodElements() { return cls_method.elements(); }
 	public String toString() {
 		String super_name="null";
