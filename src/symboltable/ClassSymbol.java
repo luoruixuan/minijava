@@ -33,14 +33,14 @@ public class ClassSymbol extends Symbol {
 			super_name = cls_super.getName();
 		}
 		String ret = sym_name + " extends " + super_name + "\n{\nVariable:\n";
-		Enumeration i = varElements();
+		Enumeration<VarSymbol> i = varElements();
 		while (i.hasMoreElements()) {
 			ret = ret + i.nextElement() + "\n";
 		}
 		ret = ret + "Method:\n";
-		i = methodElements();
-		while (i.hasMoreElements()) {
-			ret = ret + i.nextElement() + "\n";
+		Enumeration<MethodSymbol> j = methodElements();
+		while (j.hasMoreElements()) {
+			ret = ret + j.nextElement() + "\n";
 		}
 		return ret+"}";
 	}

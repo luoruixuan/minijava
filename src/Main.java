@@ -22,10 +22,9 @@ public class Main{
 			e.printStackTrace();
 		}
 		Hashtable<String, ClassSymbol> h = ST.classes;
-		Enumeration i=h.keys();
+		Enumeration<ClassSymbol> i = h.elements();
 		while(i.hasMoreElements()){
-			String T = (String)i.nextElement();
-			ClassSymbol C = h.get(T);
+			ClassSymbol C = i.nextElement();
 			System.out.println(C);
 		}
 	}

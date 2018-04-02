@@ -33,14 +33,14 @@ public class MethodSymbol extends Symbol {
 	public Enumeration<VarSymbol> varElements() { return local_var.elements(); }
 	public String toString() {
 		String ret = method_type + " " + sym_name + "(";
-		Enumeration i = argElements();
+		Enumeration<String> i = argElements();
 		while (i.hasMoreElements()) {
 			ret = ret + i.nextElement() + ", ";
 		}
 		ret = ret.substring(0,ret.length()-2)+")\n{\n";
-		i = varElements();
-		while (i.hasMoreElements()) {
-			ret = ret + i.nextElement() + "\n";
+		Enumeration<VarSymbol> j = varElements();
+		while (j.hasMoreElements()) {
+			ret = ret + j.nextElement() + "\n";
 		}
 		return ret+"}";
 	}
