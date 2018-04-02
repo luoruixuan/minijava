@@ -2,6 +2,7 @@ package symboltable;
 import java.util.*;
 
 public class ClassSymbol extends Symbol {
+	int cls_depth;
 	ClassSymbol cls_super;
 	Hashtable<String, VarSymbol> cls_var;
 	Hashtable<String, MethodSymbol> cls_method;
@@ -17,6 +18,8 @@ public class ClassSymbol extends Symbol {
 		cls_method = new Hashtable<String, MethodSymbol>();
 		setName(name);
 		setSuper(Super);
+		
+		cls_depth = (cls_super == null) ? 0 : (cls_super.cls_depth+1);
 	}
 	
 	public void setSuper(ClassSymbol Super) { cls_super = Super; }
