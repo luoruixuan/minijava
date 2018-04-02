@@ -2,17 +2,20 @@ import syntaxtree.*;
 import symboltable.*;
 import java.io.FileInputStream;
 import typecheck.TypeCheckVisitor;
-
+import java.util.*;
 
 public class Main{
 	public static void main(String args[]) {
 		//AutoTest tester = new AutoTest();
 		//tester.run();
+		Scanner s = new Scanner(System.in);
 		
 		SymbolTable ST = new SymbolTable();
 		BuildSymbolTableVisitor V = new BuildSymbolTableVisitor();
 		try {
-			FileInputStream in = new FileInputStream(args[0]);
+			//FileInputStream in = new FileInputStream(args[0]);
+			String input_file = s.next();
+			FileInputStream in = new FileInputStream(input_file);
 			Node root = new MiniJavaParser(in).Goal();
 			root.accept(V, ST);
 			TypeCheckVisitor TV = new TypeCheckVisitor();

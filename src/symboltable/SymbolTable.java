@@ -88,7 +88,7 @@ public class SymbolTable extends Symbol{
 		
 		if (length != method.argSize()) return false;
 		for (int i = 0; i < length; i++)
-			if (!arg_types[i].equals(method.argElementAt(i))) return false;
+			if (!isAnsistor(method.argElementAt(i), arg_types[i])) return false;
 		return true;
 	}
 	public String getMethodType(String C, String M) {
