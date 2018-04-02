@@ -40,7 +40,7 @@ public class MethodSymbol extends Symbol {
 		ret = ret.substring(0,ret.length()-2)+")\n{\n";
 		i = varElements();
 		while (i.hasMoreElements()) {
-			ret = ret + local_var.get(i.nextElement()) + "\n";
+			ret = ret + i.nextElement() + "\n";
 		}
 		return ret+"}";
 	}

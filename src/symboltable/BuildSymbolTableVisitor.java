@@ -105,7 +105,7 @@ public class BuildSymbolTableVisitor extends GJVoidDepthFirst<Symbol>{
 		   SymbolTable ST = (SymbolTable)argu;
 		   ClassSymbol C = new ClassSymbol(n.f1.f0.toString(), ST.classes.get("Object"));
 		   MethodSymbol M = new MethodSymbol("main", "void");
-		   M.addArg(new VarSymbol("String*", n.f11.f0.toString()));
+		   M.addArg(new VarSymbol(n.f11.f0.toString(), "String*"));
 		   ST.mainclass = n.f1.f0.toString();
 		   n.f14.accept(this, (Symbol)M);
 		   C.addMethod(M);
@@ -161,10 +161,10 @@ public class BuildSymbolTableVisitor extends GJVoidDepthFirst<Symbol>{
 	    */
 	   public void visit(VarDeclaration n, Symbol argu) {
 		   if (argu.getClass().toString().equals("class symboltable.ClassSymbol")) {
-			   ((ClassSymbol)argu).addVar(new VarSymbol(parseType(n.f0), n.f1.f0.toString()));
+			   ((ClassSymbol)argu).addVar(new VarSymbol(n.f1.f0.toString(), parseType(n.f0)));
 		   }
 		   else {
-			   ((MethodSymbol)argu).addVar(new VarSymbol(parseType(n.f0), n.f1.f0.toString()));
+			   ((MethodSymbol)argu).addVar(new VarSymbol(n.f1.f0.toString(), parseType(n.f0)));
 		   }
 	   }
 

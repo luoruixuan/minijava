@@ -28,14 +28,19 @@ public class ClassSymbol extends Symbol {
 	public void addMethod(MethodSymbol method) { cls_method.put(method.getName(), method); }
 	public Enumeration<MethodSymbol> methodElements() { return cls_method.elements(); }
 	public String toString() {
-		String ret = sym_name + " extends " + cls_super.getName() + "\n{\n";
+		String super_name="null";
+		if (cls_super != null) {
+			super_name = cls_super.getName();
+		}
+		String ret = sym_name + " extends " + super_name + "\n{\nVariable:\n";
 		Enumeration i = varElements();
 		while (i.hasMoreElements()) {
-			ret = ret + cls_var.get(i.nextElement()) + "\n";
+			ret = ret + i.nextElement() + "\n";
 		}
+		ret = ret + "Method:\n";
 		i = methodElements();
 		while (i.hasMoreElements()) {
-			ret = ret + cls_method.get(i.nextElement()) + "\n";
+			ret = ret + i.nextElement() + "\n";
 		}
 		return ret+"}";
 	}
