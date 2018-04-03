@@ -54,7 +54,7 @@ public class BuildSymbolTableVisitor extends GJVoidDepthFirst<Symbol>{
 	    */
 	   public void visit(MainClass n, Symbol argu) {
 		   SymbolTable ST = (SymbolTable)argu;
-		   ClassSymbol C = new ClassSymbol(n.f1.f0.toString(), ST.classes.get("Object"));
+		   ClassSymbol C = new ClassSymbol(n.f1.f0.toString(), "Object");
 		   MethodSymbol M = new MethodSymbol("main", "void");
 		   M.addArg(new VarSymbol(n.f11.f0.toString(), "String*"));
 		   ST.mainclass = n.f1.f0.toString();
@@ -80,7 +80,7 @@ public class BuildSymbolTableVisitor extends GJVoidDepthFirst<Symbol>{
 	   public void visit(ClassDeclaration n, Symbol argu) {
 		   SymbolTable ST = (SymbolTable)argu;
 		   String name = n.f1.f0.toString();
-		   ClassSymbol C = new ClassSymbol(name, ST.classes.get("Object"));
+		   ClassSymbol C = new ClassSymbol(name, "Object");
 		   n.f3.accept(this, (Symbol)C);
 		   n.f4.accept(this, (Symbol)C);
 		   ST.classes.put(name, C);
@@ -99,7 +99,7 @@ public class BuildSymbolTableVisitor extends GJVoidDepthFirst<Symbol>{
 	   public void visit(ClassExtendsDeclaration n, Symbol argu) {
 		   SymbolTable ST = (SymbolTable)argu;
 		   String name = n.f1.f0.toString();
-		   ClassSymbol C = new ClassSymbol(name, ST.classes.get(n.f3.f0.toString()));
+		   ClassSymbol C = new ClassSymbol(name, n.f3.f0.toString());
 		   n.f5.accept(this, (Symbol)C);
 		   n.f6.accept(this, (Symbol)C);
 		   ST.classes.put(name, C);

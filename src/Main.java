@@ -18,6 +18,7 @@ public class Main{
 			//FileInputStream in = new FileInputStream(input_file);
 			Node root = new MiniJavaParser(in).Goal();
 			root.accept(V, ST);
+			ST.createSymbolTree();
 			TypeCheckVisitor TV = new TypeCheckVisitor();
 			root.accept(TV, ST);
 			System.out.println("Accpet.");

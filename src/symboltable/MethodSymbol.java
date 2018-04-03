@@ -54,7 +54,7 @@ public class MethodSymbol extends Symbol {
 		while (i.hasMoreElements()) {
 			ret = ret + i.nextElement() + ", ";
 		}
-		ret = ret.substring(0,ret.length()-2)+")\n{\n";
+		ret = ret.substring(0,ret.length())+")\n{\n";
 		Enumeration<VarSymbol> j = varElements();
 		while (j.hasMoreElements()) {
 			ret = ret + j.nextElement() + "\n";

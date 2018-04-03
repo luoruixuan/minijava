@@ -4,6 +4,7 @@ import java.util.*;
 
 public class SymbolTable extends Symbol{
 	public Hashtable<String, ClassSymbol> classes;
+	public Hashtable<String, Integer> degree;
 	String mainclass;
 	
 	// For type check
@@ -97,6 +98,27 @@ public class SymbolTable extends Symbol{
 		
 		return method.getType();
 	}
+	
+	public void createSymbolTree() {
+		Enumeration<ClassSymbol> i = classes.elements();
+		while(i.hasMoreElements()) {
+			ClassSymbol temp = i.nextElement();
+			if (temp.getName().equals("Object")) continue;
+			ClassSymbol Super = classes.get(temp.cls_super_name);
+			temp.setSuper(Super);
+		}
+		
+		i = classes.elements();
+		while(i.hasMoreElements()) {
+			ClassSymbol temp = i.nextElement();
+			if (!temp.TryAccessObject()) {
+				System.out.println("Cyclic inheritance found in class \""+temp.getName()+"\"");
+				System.exit(0);
+			}
+		}
+	}
+	
+	// just for debug
 	public String toString() {
 		String ret = "";
 		Enumeration<ClassSymbol> i = classes.elements();
