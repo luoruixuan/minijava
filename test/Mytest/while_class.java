@@ -9,13 +9,18 @@ class Test {
 		i = c.length;
 	}
 }
-class A{
+
+class A {
 	int A;
 	int foo;
 	public int foo(int b) {
 		int A;
 		int foo;
-		return 0;
+		foo = 0;
+		while(new Test()) {
+			foo = foo + 1;
+		}
+		return foo;
 	}
 }
 

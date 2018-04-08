@@ -19,3 +19,8 @@ class A{
 	}
 }
 
+class B extends A {
+	public int foo(int a) {
+		return 1;
+	}
+}

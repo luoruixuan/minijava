@@ -7,7 +7,7 @@ import java.util.*;
 public class Main{
 	public static void main(String args[]) {
 		//AutoTest tester = new AutoTest();
-		//tester.run();
+		//tester.run(15);
 		//Scanner s = new Scanner(System.in);
 		
 		SymbolTable ST = new SymbolTable();

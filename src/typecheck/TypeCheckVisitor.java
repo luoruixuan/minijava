@@ -232,7 +232,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String var = n.f0.f0.toString();
 	   String leftType = argu.getType(var);
 	   String rightType = n.f2.accept(this, argu);
-	   if (!argu.isAnsistor(rightType, leftType)) {
+	   if (!argu.isAnsistor(leftType, rightType)) {
 		   System.out.println("Type error in assignment.");
 		   System.exit(0);
 	   }

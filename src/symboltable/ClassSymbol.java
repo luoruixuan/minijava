@@ -67,8 +67,10 @@ public class ClassSymbol extends Symbol {
 		
 		if (sym_name.equals("Object")) return true;
 		temp.put(sym_name, "");
+		cls_depth = 0;
 		ClassSymbol Super = getSuper();
 		while(true) {
+			cls_depth++;
 			String super_name = Super.getName();
 			if (super_name.equals("Object")) return true;
 			if (temp.containsKey(super_name)) return false;

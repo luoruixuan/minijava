@@ -12,7 +12,7 @@ class Test {
 class A{
 	int A;
 	int foo;
-	public int foo(int b) {
+	public int foo(int[] b) {
 		int A;
 		int foo;
 		return 0;

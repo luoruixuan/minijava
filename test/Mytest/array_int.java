@@ -6,10 +6,12 @@ class Test {
 		a = new A();
 		i = a.foo(1);
 		c = new int[10];
+		c[a] = 1;
 		i = c.length;
 	}
 }
-class A{
+
+class A {
 	int A;
 	int foo;
 	public int foo(int b) {

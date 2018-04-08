@@ -9,7 +9,8 @@ class Test {
 		i = c.length;
 	}
 }
-class A{
+
+class A {
 	int A;
 	int foo;
 	public int foo(int b) {
@@ -17,5 +18,7 @@ class A{
 		int foo;
 		return 0;
 	}
+	public int foo(int c) {
+		return 1;
+	}
 }
-

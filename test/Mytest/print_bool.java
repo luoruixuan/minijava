@@ -4,17 +4,19 @@ class Test {
 		int i;
 		int[] c;
 		a = new A();
-		i = a.foo(1);
+		i = a.foo(true);
 		c = new int[10];
 		i = c.length;
 	}
 }
-class A{
+
+class A {
 	int A;
 	int foo;
-	public int foo(int b) {
+	public int foo(boolean b) {
 		int A;
 		int foo;
+		System.out.println(b);
 		return 0;
 	}
 }

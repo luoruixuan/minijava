@@ -27,61 +27,50 @@ public class SymbolTable extends Symbol{
 		presentMethod = M;
 	}
 	
-	public String getType(String var) {
+	private VarSymbol getVarSymbol(String var) {
 		ClassSymbol cls = classes.get(presentClass);
 		MethodSymbol method = cls.cls_method.get(presentMethod);
-		
-		if (!cls.hasVar(var) && !method.hasVar(var)) {
-			System.out.println("Using variable \""+var+"\" before defination.");
-			System.exit(0);
-		}
-		VarSymbol varsym;
 		if (method.hasVar(var))
-			varsym = method.local_var.get(var);
-		else
-			varsym = cls.getVar(var);
+			return method.local_var.get(var);
 		
+		while(!cls.getName().equals("Object")) {
+			if (cls.hasVar(var))
+				return cls.getVar(var);
+			cls = cls.getSuper();
+		}
+		System.out.println("Using variable \""+var+"\" before defination.");
+		System.exit(0);
+		return null;
+	}
+	
+	public String getType(String var) {
+		VarSymbol varsym = getVarSymbol(var);
 		return varsym.getType();
 	}
 	
 	public boolean varIsInitialized(String var) {
-		ClassSymbol cls = classes.get(presentClass);
-		MethodSymbol method = cls.cls_method.get(presentMethod);
-		
-		if (!cls.hasVar(var) && !method.hasVar(var)) {
-			System.out.println("Using variable \""+var+"\" before defination.");
-			System.exit(0);
-		}
-		VarSymbol varsym;
-		if (method.hasVar(var))
-			varsym = method.local_var.get(var);
-		else
-			varsym = cls.getVar(var);
-		
+		VarSymbol varsym = getVarSymbol(var);
 		return varsym.isInitialized();
 	}
 	
 	public void varInitialize(String var) {
-		ClassSymbol cls = classes.get(presentClass);
-		MethodSymbol method = cls.cls_method.get(presentMethod);
-		
-		if (!cls.hasVar(var) && !method.hasVar(var)) {
-			System.out.println("Using variable \""+var+"\" before defination.");
+		VarSymbol varsym = getVarSymbol(var);
+		varsym.initialize();
+	}
+	
+	public void addClass(String C, ClassSymbol cls) {
+		if (classes.containsKey(C)) {
+			System.out.println("Duplicate class defination "+C);
 			System.exit(0);
 		}
-		VarSymbol varsym;
-		if (method.hasVar(var))
-			varsym = method.local_var.get(var);
-		else
-			varsym = cls.getVar(var);
-		varsym.initialize();
+		classes.put(C, cls);
 	}
 	
 	public boolean hasClasses(String C) {
 		if (classes.containsKey(C)) return true;
-		if (C == "int") return true;
-		if (C == "boolean") return true;
-		if (C == "int*") return true;
+		if (C.equals("int")) return true;
+		if (C.equals("boolean")) return true;
+		if (C.equals("int*")) return true;
 		return false;
 	}
 	public ClassSymbol getLca(String C1, String C2) {
@@ -112,14 +101,23 @@ public class SymbolTable extends Symbol{
 		return lca.getName().equals(C1);
 	}
 	
+	private MethodSymbol getMethodSymbol(ClassSymbol cls, String M) { 
+		while(!cls.getName().equals("Object")) {
+			if (cls.cls_method.containsKey(M))
+				return cls.cls_method.get(M);
+			cls = cls.getSuper();
+		}
+		System.out.println("Using method \""+M+"\" before defination.");
+		System.exit(0);
+		return null;
+	}
 	public boolean checkMethodArgsType(String C, String M, String Arg_types) {
 		ClassSymbol cls = classes.get(C);
-		MethodSymbol method = cls.cls_method.get(M);
+		MethodSymbol method = getMethodSymbol(cls, M);
 
 		if (Arg_types.equals("")) Arg_types = " ";
 		String[] arg_types = Arg_types.split(" ");
 		int length = arg_types.length;
-		
 		if (length != method.argSize()) return false;
 		for (int i = 0; i < length; i++)
 			if (!isAnsistor(method.argElementAt(i), arg_types[i])) return false;
@@ -127,8 +125,7 @@ public class SymbolTable extends Symbol{
 	}
 	public String getMethodType(String C, String M) {
 		ClassSymbol cls = classes.get(C);
-		MethodSymbol method = cls.cls_method.get(M);
-		
+		MethodSymbol method = getMethodSymbol(cls, M);
 		return method.getType();
 	}
 	

@@ -9,13 +9,14 @@ class Test {
 		i = c.length;
 	}
 }
-class A{
+
+class A {
 	int A;
 	int foo;
 	public int foo(int b) {
 		int A;
 		int foo;
+		a = 0;
 		return 0;
 	}
 }
-

@@ -9,7 +9,7 @@ class Test {
 		i = c.length;
 	}
 }
-class A{
+class A extends B{
 	int A;
 	int foo;
 	public int foo(int b) {
@@ -19,3 +19,8 @@ class A{
 	}
 }
 
+class B extends C {
+}
+
+class C extends A {
+}

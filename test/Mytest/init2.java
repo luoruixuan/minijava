@@ -15,7 +15,7 @@ class A{
 	public int foo(int b) {
 		int A;
 		int foo;
-		return 0;
+		return foo;
 	}
 }
 

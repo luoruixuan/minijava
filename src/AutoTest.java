@@ -10,28 +10,41 @@ public class AutoTest{
 		String path = "E:\\作业\\大三下\\编译实习\\minijava\\test\\";
 		File f = new File(path);
 	    File fa[] = f.listFiles();
-		namelist = new String[fa.length];
+	    int tot = 0;
 	    for (int i = 0; i < fa.length; i++) {
 		      File fs = fa[i];
 		      if (!fs.isDirectory()) {
-		        namelist[i] = path+fs.getName();
+		    	  tot++;
+		      }
+	    }
+
+	    namelist = new String[tot];
+	    int now = 0;
+		for (int i = 0; i < fa.length; i++) {
+			  File fs = fa[i];
+			  if (!fs.isDirectory()) {
+		        namelist[now] = path+fs.getName();
+		        now = now + 1;
 		      }
 	    }
 	}
-	public void run() {
-		for (int i=0; i<namelist.length; i++) {
-			solve(namelist[i]);
-		}
+	public void run(int id) {
+		solve(namelist[id]);
+		//for (int i=0; i<namelist.length; i++) {
+		//	solve(namelist[i]);
+		//}
 	}
 	public static void solve(String name) {
-		if (name.endsWith("error.java")) return;
 		System.out.println(name);
 		SymbolTable ST = new SymbolTable();
 		BuildSymbolTableVisitor V = new BuildSymbolTableVisitor();
 		try {
 			FileInputStream in = new FileInputStream(name);
+			//String input_file = s.next();
+			//FileInputStream in = new FileInputStream(input_file);
 			Node root = new MiniJavaParser(in).Goal();
 			root.accept(V, ST);
+			ST.createSymbolTree();
 			TypeCheckVisitor TV = new TypeCheckVisitor();
 			root.accept(TV, ST);
 			System.out.println("Accpet.");

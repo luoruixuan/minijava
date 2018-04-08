@@ -4,7 +4,7 @@ class Test {
 		int i;
 		int[] c;
 		a = new A();
-		i = a.foo(1);
+		i = a.foo(1, c);
 		c = new int[10];
 		i = c.length;
 	}
@@ -19,3 +19,8 @@ class A{
 	}
 }
 
+class B extends A {
+	public int foo(int b, boolean a) {
+		return 0;
+	}
+}

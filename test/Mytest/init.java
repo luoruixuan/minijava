@@ -5,7 +5,6 @@ class Test {
 		int[] c;
 		a = new A();
 		i = a.foo(1);
-		c = new int[10];
 		i = c.length;
 	}
 }

@@ -7,6 +7,7 @@ class Test {
 		i = a.foo(1);
 		c = new int[10];
 		i = c.length;
+		i = i + a;
 	}
 }
 class A{
@@ -18,4 +19,3 @@ class A{
 		return 0;
 	}
 }
-
