@@ -63,11 +63,16 @@ public class ClassSymbol extends Symbol {
 	public Enumeration<MethodSymbol> methodElements() { return cls_method.elements(); }
 	
 	public boolean TryAccessObject() {
+		Hashtable<String, String> temp = new Hashtable<String, String>();
+		
 		if (sym_name.equals("Object")) return true;
+		temp.put(sym_name, null);
 		ClassSymbol Super = getSuper();
 		while(true) {
-			if (Super.getName().equals("Object")) return true;
-			if (Super.getName().equals(sym_name)) return false;
+			String super_name = Super.getName();
+			if (super_name.equals("Object")) return true;
+			if (temp.containsKey(super_name)) return false;
+			temp.put(super_name, null);
 			Super = Super.getSuper();
 		}
 	}
