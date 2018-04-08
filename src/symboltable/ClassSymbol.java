@@ -66,13 +66,13 @@ public class ClassSymbol extends Symbol {
 		Hashtable<String, String> temp = new Hashtable<String, String>();
 		
 		if (sym_name.equals("Object")) return true;
-		temp.put(sym_name, null);
+		temp.put(sym_name, "");
 		ClassSymbol Super = getSuper();
 		while(true) {
 			String super_name = Super.getName();
 			if (super_name.equals("Object")) return true;
 			if (temp.containsKey(super_name)) return false;
-			temp.put(super_name, null);
+			temp.put(super_name, "");
 			Super = Super.getSuper();
 		}
 	}

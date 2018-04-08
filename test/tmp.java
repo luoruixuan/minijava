@@ -10,7 +10,10 @@ class Test {
 	}
 }
 
-class A {
+class C extends A {
+}
+
+class A extends B {
 	int A;
 	int foo;
 	public int foo(int b) {
