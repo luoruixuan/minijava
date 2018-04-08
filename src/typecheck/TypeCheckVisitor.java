@@ -151,7 +151,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String aimType = parseType(n.f1);
 	   String s = n.f10.accept(this, argu);
 	   if (!argu.isAnsistor(aimType, s)) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. Return type does not match in function " + n.f2.f0.toString()+".");
 		   System.exit(0);
 	   }
 	   return aimType;
@@ -233,9 +233,10 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String leftType = argu.getType(var);
 	   String rightType = n.f2.accept(this, argu);
 	   if (!argu.isAnsistor(rightType, leftType)) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error in assignment.");
 		   System.exit(0);
 	   }
+	   argu.varInitialize(var);
 	   return null;
    }
 
@@ -253,10 +254,19 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String idType = argu.getType(var);
 	   String expType = n.f2.accept(this, argu);
 	   String rightType = n.f5.accept(this, argu);
-	   if (!expType.equals("int")||!rightType.equals("int")||!idType.equals("int*")) {
-		   System.out.println("Type error.");
+	   if (!expType.equals("int")) {
+		   System.out.println("Type error. Array index must be integer.");
 		   System.exit(0);
 	   }
+	   if (!rightType.equals("int")) {
+		   System.out.println("Type error in assignment. ");
+		   System.exit(0);
+	   }
+	   if (!idType.equals("int*")) {
+		   System.out.println("Type error. " + var + " is not an array.");
+		   System.exit(0);
+	   }
+	   argu.varInitialize(var);
 	   return null;
    }
 
@@ -274,7 +284,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   n.f4.accept(this, argu);
 	   n.f6.accept(this, argu);
 	   if (!expType.equals("boolean")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. Expression in if statement is not a boolean.");
 		   System.exit(0);
 	   }
 	   return null;
@@ -291,7 +301,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String expType = n.f2.accept(this, argu);
 	   n.f4.accept(this, argu);
 	   if (!expType.equals("boolean")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. Expression in while statement is not a boolean.");
 		   System.exit(0);
 	   }
 	   return null;
@@ -307,7 +317,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
    public String visit(PrintStatement n, SymbolTable argu) {
 	   String expType = n.f2.accept(this, argu);
 	   if (!expType.equals("int")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. You must print an integer.");
 		   System.exit(0);
 	   }
 	   return null;
@@ -337,7 +347,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String type0 = n.f0.accept(this, argu);
 	   String type2 = n.f2.accept(this, argu);
 	   if (!type0.equals("boolean")||!type2.equals("boolean")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. && operator can only be applied on booleans.");
 		   System.exit(0);
 	   }
 	   return "boolean";
@@ -352,7 +362,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String type0 = n.f0.accept(this, argu);
 	   String type2 = n.f2.accept(this, argu);
 	   if (!type0.equals("int")||!type2.equals("int")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. < operator can only be applied on integers.");
 		   System.exit(0);
 	   }
 	   return "boolean";
@@ -367,7 +377,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String type0 = n.f0.accept(this, argu);
 	   String type2 = n.f2.accept(this, argu);
 	   if (!type0.equals("int")||!type2.equals("int")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. + operator can only be applied on integers.");
 		   System.exit(0);
 	   }
 	   return "int";
@@ -382,7 +392,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String type0 = n.f0.accept(this, argu);
 	   String type2 = n.f2.accept(this, argu);
 	   if (!type0.equals("int")||!type2.equals("int")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. - operator can only be applied on integers.");
 		   System.exit(0);
 	   }
 	   return "int";
@@ -397,7 +407,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
 	   String type0 = n.f0.accept(this, argu);
 	   String type2 = n.f2.accept(this, argu);
 	   if (!type0.equals("int")||!type2.equals("int")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. * operator can only be applied on integers.");
 		   System.exit(0);
 	   }
 	   return "int";
@@ -412,8 +422,12 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
    public String visit(ArrayLookup n, SymbolTable argu) {
 	   String type0 = n.f0.accept(this, argu);
 	   String type2 = n.f2.accept(this, argu);
-	   if (!type0.equals("int*")||!type2.equals("int")) {
-		   System.out.println("Type error.");
+	   if (!type0.equals("int*")) {
+		   System.out.println("Type error. Type " + type0 + " is not an array.");
+		   System.exit(0);
+	   }
+	   if (!type2.equals("int")) {
+		   System.out.println("Type error. Array index must be integer.");
 		   System.exit(0);
 	   }
 	   return "int";
@@ -426,9 +440,8 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
     */
    public String visit(ArrayLength n, SymbolTable argu) {
 	   String type0 = n.f0.accept(this, argu);
-	   String type2 = n.f2.accept(this, argu);
-	   if (!type0.equals("int")||!type2.equals("int")) {
-		   System.out.println("Type error.");
+	   if (!type0.equals("int*")) {
+		   System.out.println("Type error. Type " + type0 + " is not an array.");
 		   System.exit(0);
 	   }
 	   return "int";
@@ -512,6 +525,11 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
     * f0 -> <IDENTIFIER>
     */
    public String visit(Identifier n, SymbolTable argu) {
+	   String name = n.f0.toString();
+		if (!argu.varIsInitialized(name)) {
+			System.out.println("Variable " + name + " not initialized.");
+			System.exit(0);
+		}
 	   return argu.getType(n.f0.toString());
    }
 
@@ -532,7 +550,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
    public String visit(ArrayAllocationExpression n, SymbolTable argu) {
 	   String type3 = n.f3.accept(this, argu);
 	   if (!type3.equals("int")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. Array must be allocated with an integer length.");
 		   System.exit(0);
 	   }
 	   return "int*";
@@ -547,7 +565,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
    public String visit(AllocationExpression n, SymbolTable argu) {
 	   String cls = n.f1.f0.toString();
 	   if (!argu.hasClasses(cls)) {
-		   System.out.println("No type "+cls+".");
+		   System.out.println("No type " + cls + ".");
 		   System.exit(0);
 	   }
 	   return cls;
@@ -560,7 +578,7 @@ public class TypeCheckVisitor extends GJDepthFirst<String, SymbolTable> {
    public String visit(NotExpression n, SymbolTable argu) {
 	   String type1 = n.f1.accept(this, argu);
 	   if (!type1.equals("boolean")) {
-		   System.out.println("Type error.");
+		   System.out.println("Type error. Expression after ! is not boolean type.");
 		   System.exit(0);
 	   }
 	   return "boolean";

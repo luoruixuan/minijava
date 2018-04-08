@@ -44,6 +44,39 @@ public class SymbolTable extends Symbol{
 		return varsym.getType();
 	}
 	
+	public boolean varIsInitialized(String var) {
+		ClassSymbol cls = classes.get(presentClass);
+		MethodSymbol method = cls.cls_method.get(presentMethod);
+		
+		if (!cls.hasVar(var) && !method.hasVar(var)) {
+			System.out.println("Using variable \""+var+"\" before defination.");
+			System.exit(0);
+		}
+		VarSymbol varsym;
+		if (method.hasVar(var))
+			varsym = method.local_var.get(var);
+		else
+			varsym = cls.getVar(var);
+		
+		return varsym.isInitialized();
+	}
+	
+	public void varInitialize(String var) {
+		ClassSymbol cls = classes.get(presentClass);
+		MethodSymbol method = cls.cls_method.get(presentMethod);
+		
+		if (!cls.hasVar(var) && !method.hasVar(var)) {
+			System.out.println("Using variable \""+var+"\" before defination.");
+			System.exit(0);
+		}
+		VarSymbol varsym;
+		if (method.hasVar(var))
+			varsym = method.local_var.get(var);
+		else
+			varsym = cls.getVar(var);
+		varsym.initialize();
+	}
+	
 	public boolean hasClasses(String C) {
 		if (classes.containsKey(C)) return true;
 		if (C == "int") return true;
@@ -113,6 +146,15 @@ public class SymbolTable extends Symbol{
 			ClassSymbol temp = i.nextElement();
 			if (!temp.TryAccessObject()) {
 				System.out.println("Cyclic inheritance found in class \""+temp.getName()+"\"");
+				System.exit(0);
+			}
+		}
+		
+		i = classes.elements();
+		while(i.hasMoreElements()) {
+			ClassSymbol temp = i.nextElement();
+			if (!temp.CheckOverLoading()) {
+				System.out.println("Function overloaded.");
 				System.exit(0);
 			}
 		}

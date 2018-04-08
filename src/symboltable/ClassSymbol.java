@@ -26,7 +26,7 @@ public class ClassSymbol extends Symbol {
 	
 	public void setName(String name) {
 		sym_name = name;
-		VarSymbol This = new VarSymbol("this", name);
+		VarSymbol This = new VarSymbol("this", name, true);
 		cls_var.put("this", This);
 	}
 	
@@ -70,6 +70,28 @@ public class ClassSymbol extends Symbol {
 			if (Super.getName().equals(sym_name)) return false;
 			Super = Super.getSuper();
 		}
+	}
+	
+	public boolean CheckOverLoading() {
+		if (sym_name.equals("Object")) return true;
+		ClassSymbol Super = getSuper();
+		while(!Super.getName().equals("Object")) {
+			Enumeration<MethodSymbol> i = Super.methodElements();
+			while (i.hasMoreElements()) {
+				MethodSymbol m = i.nextElement();
+				if (!cls_method.containsKey(m.getName())) 
+					continue;
+				MethodSymbol mthis = cls_method.get(m.getName());
+				if (m.argSize() != mthis.argSize())
+					return false;
+				for (int k=0;k<m.argSize();++k) {
+					if (!m.args_type.get(k).equals(mthis.args_type.get(k)))
+						return false;
+				}
+			}
+			Super = Super.getSuper();
+		}
+		return true;
 	}
 	
 	// just for debug

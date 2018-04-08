@@ -2,14 +2,16 @@ package symboltable;
 
 public class VarSymbol extends Symbol {
 	String var_type;
+	boolean initialized;
 	
 	public VarSymbol ()
 	{
 	}
-	public VarSymbol (String name, String type)
+	public VarSymbol (String name, String type, boolean init)
 	{
 		setName(name);
 		var_type = type;
+		initialized = init;
 	}
 	
 	public void setType(String type)
@@ -20,5 +22,14 @@ public class VarSymbol extends Symbol {
 	{
 		return var_type;
 	}
+	public boolean isInitialized()
+	{
+		return initialized;
+	}
+	public void initialize()
+	{
+		initialized = true;
+	}
+	
 	public String toString() {return var_type + ": "+ sym_name;}
 }
